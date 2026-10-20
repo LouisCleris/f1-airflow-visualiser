@@ -2194,3 +2194,16 @@ Chrome, with no console errors, no failed requests and the disclaimer shown.
 - The publish scan also checks the text files it writes for wording left over from the removed small-screen version.
 - The public history was replaced: `main` and `gh-pages` each hold a single new commit.
 - Checks: `npm test` 20/20, models untouched; `test:ui` 32/32 on dist.
+
+## Credit line, README authorship, About box (2026-10-20)
+
+- Site: a credit line under the disclaimer, inside the same bottom-right panel and in the same type, with "GitHub"
+  linking to the source repo. It fits beside the part buttons and under the component card at 1440x900, 1280x720 and
+  1024x640 (no overlap, no card scrolling). A new UI check covers the disclaimer and the credit line and its link.
+- README: an authorship paragraph and the live-viewer link under the name; the disclosure paragraph replaced.
+- `make_public.py`: the full name is allowed only in the credit phrase (the page and the built page) and the site
+  address only in the README's live-viewer line; each must be present there, and both stay blocked everywhere else.
+  Text files are now read and written as UTF-8 with their line endings kept: before, Windows line endings crept into
+  every file the name scrub touched.
+- GitHub About box: description and website set with `gh repo edit`.
+- Known, older: at 1024 px wide the camera buttons wrap to a second row behind the controls panel.

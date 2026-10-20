@@ -414,6 +414,16 @@ try {
   record('the page loads with no console errors', errors.length === 0, errors.length ? errors.join(' | ') : `loaded in ${((Date.now() - t0) / 1000).toFixed(1)} s (${target})`);
   const desktopNote = await page.evaluate(() => getComputedStyle(document.querySelector('#smallScreen')).display);
   record('desktop size (1440x900): the small-screen notice is not shown', desktopNote === 'none', desktopNote);
+  const credit = await page.evaluate(() => {
+    const d = document.querySelector('#disclaimer'), c = document.querySelector('#credit'), a = c.querySelector('a'), r = c.getBoundingClientRect();
+    return { disclaimer: d.querySelector('p').textContent, credit: c.textContent, href: a.href, link: a.textContent, target: a.target,
+      shown: r.width > 0 && r.bottom <= innerHeight && getComputedStyle(c).fontSize === getComputedStyle(d).fontSize };
+  });
+  record('the disclaimer and the credit line are shown, the credit linking to the source on GitHub',
+    credit.disclaimer === 'Approximate flow visualisation for illustration. Not a computational fluid dynamics simulation.'
+      && /^A project by \S+ \S+ · Code AI-generated to my specification · Source and full disclosure on GitHub$/.test(credit.credit)
+      && credit.href === 'https://github.com/LouisCleris/f1-airflow-visualiser' && credit.link === 'GitHub' && credit.target === '_blank' && credit.shown,
+    JSON.stringify(credit));
 
   await checkScene(page, 'f1');
   await checkDrivingSwitch(page);

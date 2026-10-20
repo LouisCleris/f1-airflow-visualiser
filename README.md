@@ -1,5 +1,9 @@
 Louis Cleris
 
+I came up with this project, wrote its specification (SPEC.md), modelled both vehicles in Blender, and directed it from start to finish: I judged every version and decided each fix. The code was written by an AI (Claude) to my specification.
+
+Live viewer: https://louiscleris.github.io/f1-airflow-visualiser/
+
 # F1 Airflow
 
 An interactive 3D viewer that shows approximate airflow around two of my own models: an F1 car on a race track and a Falcon 6X business jet in the sky. Streamlines bend around the bodywork, speed is shown as colour (blue slower than the oncoming air, orange faster), and short-lived particles trace the turbulent wake. Click a part, or use the part buttons, to read what it does and to look at the flow around it alone.
@@ -31,4 +35,4 @@ npm run test:ui    # interface checks in headless Chrome (add "dist" to test the
 
 ## Disclosure
 
-This tool is built with AI assistance: the code is AI-generated to my specification, not hand-written by me. The 3D models, this specification, and the design decisions are my own. The component descriptions are based on my own notes and research, written with AI assistance. The interface design was made with Claude Design to my brief. Any use of this tool in an application or portfolio must state that plainly, and must describe the tool as an approximate visualisation rather than a simulation.
+This tool is built with AI assistance: the code is AI-generated to my specification, not hand-written by me. The 3D models, the specification and the design decisions are my own, and the part descriptions are based on my own notes and research. The interface design was made with Claude Design to my brief. It is an approximate visualisation, not a simulation.
