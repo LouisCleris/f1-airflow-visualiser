@@ -1,0 +1,61 @@
+{
+  "f1": {
+    "file": "models/F1 model.glb",
+    "componentCount": 40,
+    "componentNames": [
+      "Rear Wing main part",
+      "Rear Wing side plate",
+      "Rear wing DRS ",
+      "Rear Wing Holder",
+      "Rear Wing Bottom Holder",
+      "Rear wing DRS .001",
+      "DRS Holder",
+      "DRS Mechanism",
+      "Front wing side plates ",
+      "Front Wing Bottom",
+      "Front Wing middle",
+      "Front wing Top",
+      "Front wing Connecting pieces ",
+      "Front Wing Mount",
+      "Main body",
+      "Floor",
+      "Rear LED",
+      "Exhaust",
+      "Top Intake Details",
+      "Antennas",
+      "Mirrors",
+      "Inside Seat",
+      "Glass",
+      "Front Flap Details",
+      "Front Wheelover",
+      "Front Tire",
+      "Front Inside Cover",
+      "Rear Wheelover",
+      "Rear Tire",
+      "Rear Inside Cover",
+      "Front Arms ",
+      "Front Rods",
+      "Back Arms",
+      "Rear Rods",
+      "Buttons",
+      "Connection Rod",
+      "Handles",
+      "LED Lights",
+      "Screen",
+      "Steering Wheel",
+      "Steering Wheel Empty"
+    ]
+  },
+  "falcon": {
+    "file": "models/Falcon 6X.glb",
+    "componentCount": 6,
+    "componentNames": [
+      "Main Body",
+      "Wings",
+      "Back Tail",
+      "Engines",
+      "Windows",
+      "Door"
+    ]
+  }
+}

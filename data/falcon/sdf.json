@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "generatedBy": "scripts/bake_falcon_sdf.py",
+  "sourceModel": "models/Falcon 6X.glb (read-only; real full-resolution mesh, complete aircraft, placed by src/sceneConfig.js)",
+  "origin": [
+    -2.5321142158160606,
+    -0.8247457731515169,
+    -2.9083140421658755
+  ],
+  "pitch": 0.01446922409037749,
+  "dims": [
+    352,
+    112,
+    408
+  ],
+  "blockSize": 8,
+  "blockGrid": [
+    44,
+    14,
+    51
+  ],
+  "blockCount": 3883,
+  "bandWorld": 0.11575379272301992,
+  "quantisation": "int16, value = distance / bandWorld * 32767; node-centred lattice (node i at origin + i*pitch); empty blocks read as +bandWorld",
+  "sign": "positive outside, negative inside",
+  "signInconsistentPairs": 0,
+  "refine": 2,
+  "inflateCells": 0.6
+}

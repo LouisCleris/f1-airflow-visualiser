@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "generatedBy": "scripts/bake_falcon_sdf.py",
+  "note": "Flow domain of the Falcon scene: bounding box of the placed full-resolution mesh. Streamline fractions in rakes.json are relative to it.",
+  "placement": {
+    "scale": 0.22,
+    "pitchDeg": 2.5,
+    "pivot": [
+      0.0,
+      3.4673,
+      0.5065
+    ]
+  },
+  "flowAxis": "z",
+  "flowSign": -1,
+  "bboxMin": [
+    -2.3821377839156392,
+    -0.6780981249654654,
+    -2.7560064210455177
+  ],
+  "bboxMax": [
+    2.3821377839156392,
+    0.5386984730232892,
+    2.7693276963035194
+  ]
+}

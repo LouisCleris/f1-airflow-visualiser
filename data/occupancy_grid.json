@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "sourceModel": "models/F1 model.glb",
+  "sourceModelNote": "Source GLB is READ ONLY here -- never modified, decimated, or overwritten. It is a right-hand HALF car; this bake mirrors a FULL-RESOLUTION (undecimated) copy about world X=0 (same plane as src/car.js's runtime mirror) to build the full-car collision volume.",
+  "generatedBy": "scripts/bake_occupancy_grid.py",
+  "generatedAt": "2026-09-13T20:36:38Z",
+  "toolVersions": {
+    "python": "3.14.6",
+    "trimesh": "5.1.0",
+    "fast_simplification": "0.2.0",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1"
+  },
+  "decimation": {
+    "method": "none -- full resolution (see docstring: 'Solid voxelisation, decimation reconsidered' -- decimating a convex surface shrinks it inside its true envelope, and wasn't buying meaningful bake-time savings at this mesh/pitch anyway)",
+    "targetReduction": 0.0,
+    "agg": 5.0,
+    "halfMeshOriginalVerts": 39287,
+    "halfMeshOriginalFaces": 70207,
+    "halfMeshDecimatedVerts": 39287,
+    "halfMeshDecimatedFaces": 70207
+  },
+  "mirror": {
+    "plane": "world X = 0",
+    "method": "negate vertex.x, reverse face winding [0,2,1] to keep outward normals",
+    "note": "Matches src/car.js's runtime mirror plane. Mirroring the whole half-mesh (rather than re-deriving car.js's per-component RIGHT_ONLY_COMPONENTS name list in Python) is equivalent: the small already-symmetric parts documented in PROGRESS.md Phase 1 mirror onto themselves and contribute no new geometry, so the result is the same full-car shape."
+  },
+  "grid": {
+    "pitch": 0.02893844818075498,
+    "voxelDivisions": 180,
+    "origin": [
+      -0.9549687899649143,
+      -0.02893844818075498,
+      -2.633398784448703
+    ],
+    "cellCount": 110908,
+    "method": "SOLID: trimesh surface voxelisation (method='subdivide') -> 1x binary dilation (inflate ~half a voxel, the discrete form a grid can represent) -> VoxelGrid.fill(method='holes') to flood-fill the interior. Replaces the previous hollow-shell-only bake -- see docstring 'Solid voxelisation, decimation reconsidered' for why.",
+    "shellCellCount": 43383,
+    "dilatedCellCount": 98174,
+    "dilateIterations": 1
+  },
+  "normals": {
+    "method": "area-weighted average of face normals within an expanding search radius (base radius = 1.5x pitch, doubled up to 6x if nothing usable is found), falling back to nearest single face as a last resort",
+    "fallbackCellCount": 0
+  },
+  "flowDomain": {
+    "flowAxis": "z",
+    "flowSign": -1,
+    "note": "Re-derived from the RAW undecimated half-car scene graph using the same axis/sign heuristic as src/particles/domain.js (longer horizontal bbox axis = flow axis; compare avg world position of /front/i vs /rear|back/i named nodes along that axis). Bounds below are the full mirrored car at FULL mesh resolution (not the decimated collision copy), for accurate flow-domain sizing.",
+    "bboxMin": [
+      -0.9687847548235027,
+      -0.03402130364980849,
+      -2.6249901801347733
+    ],
+    "bboxMax": [
+      0.9687847548235027,
+      1.1371417045593262,
+      2.583930492401123
+    ]
+  },
+  "binaryFormat": {
+    "file": "occupancy_grid.bin",
+    "recordBytes": 24,
+    "byteOrder": "little-endian",
+    "fields": [
+      {
+        "name": "i",
+        "type": "int32",
+        "offset": 0
+      },
+      {
+        "name": "j",
+        "type": "int32",
+        "offset": 4
+      },
+      {
+        "name": "k",
+        "type": "int32",
+        "offset": 8
+      },
+      {
+        "name": "nx",
+        "type": "float32",
+        "offset": 12
+      },
+      {
+        "name": "ny",
+        "type": "float32",
+        "offset": 16
+      },
+      {
+        "name": "nz",
+        "type": "float32",
+        "offset": 20
+      }
+    ],
+    "recordCount": 110908,
+    "worldPositionFormula": "world[axis] = origin[axis] + index[axis] * pitch",
+    "normalUnits": "unit vector, points away from the occupied surface (outward)"
+  }
+}

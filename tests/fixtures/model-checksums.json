@@ -1,0 +1,12 @@
+{
+  "f1": {
+    "file": "models/F1 model.glb",
+    "sha256": "bd71a85f837d90c03613a34d3d9a0045de6240df96053b438966f7d247fc2903",
+    "bytes": 26781220
+  },
+  "falcon": {
+    "file": "models/Falcon 6X.glb",
+    "sha256": "f6622ad42afc52a5ac3e841b02191de121eada560b640d05b5cebe3bc3dc6a97",
+    "bytes": 16098700
+  }
+}

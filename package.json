@@ -1,0 +1,26 @@
+{
+  "name": "airflow-visualiser",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser airflow visualiser for an F1 car and a Falcon 6X jet. Visualisation only, not a CFD solver.",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev-server.js",
+    "build": "node scripts/build.js",
+    "test": "node tests/checks.js && node tests/models_untouched.js",
+    "inspect-models": "node scripts/inspect-glb.js \"models/F1 model.glb\" \"models/Falcon 6X.glb\"",
+    "test:ui": "node tests/ui_checks.mjs",
+    "bake": "node scripts/bake_streamlines.mjs",
+    "bake:falcon": "node scripts/bake_falcon.mjs"
+  },
+  "dependencies": {
+    "three": "^0.186.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "puppeteer-core": "^25.14.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

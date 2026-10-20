@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>F1 Airflow</title>
+  <link rel="icon" href="data:," />
+  <style>
+    @font-face { font-family: 'Geist'; src: url('/src/fonts/Geist-Variable.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+    @font-face { font-family: 'Geist Mono'; src: url('/src/fonts/GeistMono-Variable.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+    :root {
+      color-scheme: dark;
+      --bg: #0B0D10; --text: #ECEEF0; --text-2: #C9CDD2; --text-3: #A3A9B1;
+      --panel: rgba(13, 15, 19, 0.86); --line: rgba(255, 255, 255, 0.09); --line-2: rgba(255, 255, 255, 0.16);
+      --sans: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --mono: 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--bg); color: var(--text); overflow: hidden;
+      overscroll-behavior: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    body { font-family: var(--sans); }
+    button { font-family: inherit; color: inherit; cursor: pointer; }
+    button:focus-visible, input:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+    #viewport { position: fixed; inset: 0; width: 100vw; height: 100dvh; display: block; touch-action: none; }
+
+    /* loading */
+    #status { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 14px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-3); pointer-events: none; transition: opacity .4s; }
+    #status[hidden] { display: none; }
+    #status.done { opacity: 0; }
+    #status .bar { width: 140px; height: 2px; border-radius: 1px; background: rgba(255,255,255,.12); overflow: hidden; }
+    #status .bar::after { content: ''; display: block; width: 40%; height: 100%; background: var(--text); animation: slide 1.1s ease-in-out infinite; }
+    @keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
+
+    /* shared pieces */
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+    .label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); }
+    .seg { display: flex; gap: 2px; padding: 4px; }
+    .seg button { height: 44px; padding: 0 16px; border: 0; border-radius: 5px; font-size: 13px; font-weight: 500; background: transparent; color: var(--text-2); white-space: nowrap; }
+    .seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+    .icon-btn { width: 44px; height: 44px; border: 1px solid var(--line-2); border-radius: 6px; background: transparent; color: var(--text); display: flex; align-items: center; justify-content: center; }
+    .icon-btn.solid { border: 0; background: var(--text); color: var(--bg); }
+    .switch { width: 44px; height: 44px; padding: 0; border: 0; background: transparent; display: flex; align-items: center; justify-content: flex-end; flex-shrink: 0; }
+    .switch .track { display: block; width: 40px; height: 22px; padding-top: 2px; border-radius: 11px; background: rgba(255,255,255,.18); }
+    .switch .knob { display: block; width: 18px; height: 18px; border-radius: 9px; background: var(--text); margin-left: 2px; transition: margin-left .15s; }
+    .switch[aria-checked="true"] .track { background: var(--text); }
+    .switch[aria-checked="true"] .knob { background: var(--bg); margin-left: 20px; }
+    .switch[aria-disabled="true"] { opacity: .35; cursor: default; }
+    input[type=range] { width: 100%; height: 24px; margin: 0; accent-color: var(--text); }
+    .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .col { display: flex; flex-direction: column; }
+    .txt { font-size: 13px; color: var(--text-2); }
+
+    /* top bar */
+    #top { position: fixed; left: 0; right: 0; top: 0; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; pointer-events: none; }
+    #top > * { pointer-events: auto; }
+    #top .left, #top .right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .brand { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 16px; }
+    .brand span { font-family: var(--mono); font-size: 12px; font-weight: 500; letter-spacing: 0.16em; }
+    .hint { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); }
+    .grid-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+
+    /* desktop layout: panels float over the scene */
+    #controls { position: fixed; left: 24px; top: 92px; width: 272px; padding: 18px; display: flex; flex-direction: column; gap: 22px; }
+    #controls .group { display: flex; flex-direction: column; gap: 10px; }
+    #controls .flow { gap: 14px; }
+    #controls .driving { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid rgba(255,255,255,.12); border-radius: 7px; background: none; backdrop-filter: none; }
+    .slider { display: flex; flex-direction: column; gap: 6px; }
+    #card { position: fixed; right: 24px; top: 92px; width: 340px; max-height: calc(100dvh - 220px); overflow: auto; padding: 20px; display: none; flex-direction: column; gap: 14px; }
+    #card.open { display: flex; }
+    #card .head { display: flex; align-items: center; justify-content: space-between; }
+    #card .close { width: 44px; height: 44px; margin: -12px -12px -12px 0; border: 0; border-radius: 6px; background: transparent; color: var(--text-2); display: flex; align-items: center; justify-content: center; }
+    #card h2 { margin: 0; font-size: 26px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.15; }
+    #card p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-2); -webkit-user-select: text; user-select: text; }
+    #card .rule { height: 1px; background: var(--line); }
+    #bottom { position: fixed; left: 0; right: 0; bottom: 0; padding: 20px 24px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; pointer-events: none; }
+    #bottom > * { pointer-events: auto; }
+    #legend { width: 250px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+    #legend .barwrap { display: flex; flex-direction: column; gap: 10px; }
+    #legend .bar { height: 6px; border-radius: 3px; background: linear-gradient(90deg, #4C7DFF, #9AA3B2 50%, #F28C38); background: linear-gradient(in oklab 90deg, #4C7DFF, #9AA3B2 50%, #F28C38); }
+    #legend .ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-2); }
+    #parts { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; padding: 4px; }
+    #parts button { height: 44px; padding: 0 14px; border: 0; border-radius: 5px; font-size: 13px; font-weight: 500; background: transparent; color: var(--text-2); }
+    #parts button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+    #disclaimer { margin: 0; width: 300px; max-width: 100%; padding: 12px 14px; font-size: 12px; line-height: 1.5; color: var(--text-2); }
+
+    /* screens too small for this layout: a notice instead of the app (src/main.js does not load it there) */
+    #smallScreen { display: none; }
+    @media (max-width: 760px), (max-height: 500px) {
+      body > *:not(#smallScreen) { display: none !important; }
+      #smallScreen { position: fixed; inset: 0; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; }
+      #smallScreen p { margin: 0; max-width: 320px; font-size: 14px; line-height: 1.6; color: var(--text-2); }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="viewport"></canvas>
+  <div id="status" role="status"><span>Loading</span><div class="bar"></div></div>
+
+  <header id="top">
+    <div class="left">
+      <div class="panel brand">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 8c5 0 7-3 18-3"></path><path d="M3 12c6 0 8-2 18-2"></path><path d="M3 16c7 0 9 3 18 3"></path></svg>
+        <span id="brandTitle">F1 AIRFLOW</span>
+      </div>
+      <div id="scenes"></div>
+    </div>
+    <div class="right">
+      <span class="hint"><span class="mouse">Drag to orbit</span></span>
+      <div id="cameras" class="panel seg grid-seg" role="group" aria-label="Camera"></div>
+    </div>
+  </header>
+
+  <section id="controls" class="panel" aria-label="Controls">
+    <div class="group pb">
+      <span class="label">Playback</span>
+      <div class="row" style="justify-content:flex-start; gap:8px">
+        <button type="button" class="icon-btn solid" data-action="play" aria-label="Pause"></button>
+        <button type="button" class="icon-btn" data-action="reset" aria-label="Reset"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"></path><path d="M3 4v5h5"></path></svg></button>
+      </div>
+    </div>
+    <div id="driving"></div>
+    <div class="group flow">
+      <span class="label">Flow</span>
+      <div class="row streamlines-row">
+        <span class="txt">Streamlines</span>
+        <button type="button" class="switch" role="switch" data-action="streamlines" aria-label="Streamlines" aria-checked="true"><span class="track"><span class="knob"></span></span></button>
+      </div>
+      <div class="slider"><label class="txt" for="density">Particle density</label><input id="density" type="range" min="0" max="100" value="60"></div>
+      <div class="slider"><label class="txt" for="trail">Trail length</label><input id="trail" type="range" min="0" max="100" value="40"></div>
+      <div class="slider"><label class="txt" for="speed">Speed</label><input id="speed" type="range" min="0" max="100" value="70"></div>
+    </div>
+  </section>
+
+  <aside id="card" class="panel" aria-label="Component">
+    <div class="head">
+      <span class="label">Component</span>
+      <button type="button" class="close" data-action="close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg></button>
+    </div>
+    <h2 id="cardTitle"></h2>
+    <p id="cardText"></p>
+    <div class="rule"></div>
+    <div class="row">
+      <span class="txt">Show flow around this part only</span>
+      <button type="button" class="switch" role="switch" data-action="only" aria-label="Show flow around this part only" aria-checked="false"><span class="track"><span class="knob"></span></span></button>
+    </div>
+  </aside>
+
+  <footer id="bottom">
+    <div id="legend" class="panel" aria-label="Flow speed legend">
+      <span class="label">Flow speed</span>
+      <div class="barwrap"><div class="bar"></div><div class="ends"><span>Slower</span><span>Oncoming air</span><span>Faster</span></div></div>
+    </div>
+    <nav id="parts" class="panel" aria-label="Focus on a part"></nav>
+    <p id="disclaimer" class="panel">Approximate flow visualisation for illustration. Not a computational fluid dynamics simulation.</p>
+  </footer>
+
+  <div id="smallScreen" role="note">
+    <div class="panel brand">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 8c5 0 7-3 18-3"></path><path d="M3 12c6 0 8-2 18-2"></path><path d="M3 16c7 0 9 3 18 3"></path></svg>
+      <span>F1 AIRFLOW</span>
+    </div>
+    <p>Open this page on a computer to explore the airflow.</p>
+  </div>
+
+  <!-- DEV_ONLY_START: removed by scripts/build.js, which inlines the bundle instead -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "/node_modules/three/build/three.module.js",
+        "three/addons/loaders/GLTFLoader.js": "/node_modules/three/examples/jsm/loaders/GLTFLoader.js",
+        "three/addons/controls/OrbitControls.js": "/node_modules/three/examples/jsm/controls/OrbitControls.js"
+      }
+    }
+  </script>
+  <script type="module" src="/src/main.js"></script>
+  <!-- DEV_ONLY_END -->
+
+  <!-- BUILD_INLINE_SCRIPT: scripts/build.js inserts the bundled <script> here -->
+</body>
+</html>

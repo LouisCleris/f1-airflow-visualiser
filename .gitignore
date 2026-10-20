@@ -1,0 +1,8 @@
+node_modules/
+shots/
+dist/
+.DS_Store
+.venv/
+scripts/.tmp_mesh_check_points.bin
+__pycache__/
+_to_delete/
