@@ -1,0 +1,1071 @@
+{
+  "_comment": "Streamline seeding config. Seeds are scattered directly on the car's surface (snapped to the real baked occupancy grid, then offset outward along its normal), one 'group' (component region) at a time, then traced in BOTH directions to find the upstream origin and downstream exit -- see src/particles/seeding.js and streamlines.js's traceBidirectional. Not baked, hand-authored; lives alongside occupancy_grid.* because both are fetched at runtime the same way. Region coordinates are fractions of the car's own dimensions (see src/particles/anchors.js): alongFlow is a fraction of domain.halfLength from the car's centre (-1 = front-most extent, +1 = rear-most extent); lateral is a fraction of the car's own half-width from the centreline; vertical is a fraction of the car's own height above the ground. A region is a [min,max] RANGE on each axis -- a rough box around the component, not a tight fit to its actual (often curved) surface. `mirror: true` doubles a group onto the opposite side of the centreline (count applies PER SIDE). `count` is the target LINE COUNT for that group. Phase 3.7: counts raised from a ~138-line total toward the 400-600 visual target (the author's explicit ask) -- group regions/positions unchanged from Phase 3.6, only counts scaled. Later Phase 3.7 addendum: `nose` widened (lateral/vertical/alongFlow) and `cockpit`/`chassis` (new) added so the front-wing/nose-flank/nose-pillar/cockpit-surround/chassis-flank guide curves below have real surface seeds to act on -- see PROGRESS.md.",
+  "seeding": {
+    "lineCountCap": 400,
+    "candidateMultiplier": 6,
+    "minSeparationWorld": 0.03,
+    "maxSurfaceDistanceCells": 3,
+    "surfaceOffsetCells": 1.6
+  },
+  "_comment_zigzagFix": "Addendum: three knobs added to fix visible zigzag/clutter on tight-hugging lines, all with defaults matching their code-side CONFIG objects (kept here too so they're tunable without touching code, same as `seeding` above). fieldRepulsion (src/particles/vectorField.js FIELD_REPULSION_CONFIG): a soft push away from the nearest occupied surface baked into the field itself, fading to zero by radiusCells grid cells out, so the hard SDF clamp in streamlines.js rarely needs to fire at all. smoothing (streamlines.js SMOOTHING_CONFIG): Laplacian smoothing of each traced polyline after tracing to remove residual sawtooth from whatever clamp firings still happen, with a re-check-and-reclamp against the real grid afterward since smoothing can push a point back into geometry. culling (streamlines.js CULL_CONFIG): drops lines that never stray far from freestream anywhere along their length ('uninteresting') or that needed the hard clamp more than maxClampFireCount times ('misbehaving'), then tops back up with replacement seeds so culling doesn't thin the overall picture below lineCountCap.",
+  "fieldRepulsion": {
+    "enabled": true,
+    "radiusCells": 3,
+    "strengthFraction": 1
+  },
+  "smoothing": {
+    "enabled": true,
+    "maxSegmentWorld": 0.005,
+    "subdivideWithinCells": 2.5,
+    "finalStandoffCells": 0.5,
+    "rounds": 3,
+    "passes": 4,
+    "alpha": 0.5
+  },
+  "culling": {
+    "enabled": true,
+    "minMaxDeviationFraction": 0.15,
+    "maxClampFireCount": 100,
+    "maxTopUpRounds": 14,
+    "maxTurnDegrees": 30,
+    "maxSeedOffsetCells": 3.2,
+    "seedOffsetStepCells": 0.4
+  },
+  "groups": [
+    {
+      "name": "front-wing",
+      "count": 66,
+      "region": {
+        "alongFlow": [
+          -1.08,
+          -0.97
+        ],
+        "lateral": [
+          -0.7,
+          0.7
+        ],
+        "vertical": [
+          0.1,
+          0.3
+        ]
+      }
+    },
+    {
+      "name": "nose",
+      "count": 46,
+      "region": {
+        "alongFlow": [
+          -0.98,
+          -0.46
+        ],
+        "lateral": [
+          -0.48,
+          0.48
+        ],
+        "vertical": [
+          0.15,
+          0.62
+        ]
+      }
+    },
+    {
+      "name": "cockpit",
+      "count": 24,
+      "region": {
+        "alongFlow": [
+          -0.48,
+          0.22
+        ],
+        "lateral": [
+          -0.3,
+          0.3
+        ],
+        "vertical": [
+          0.28,
+          1
+        ]
+      }
+    },
+    {
+      "name": "chassis",
+      "count": 22,
+      "mirror": true,
+      "region": {
+        "alongFlow": [
+          -0.3,
+          0.05
+        ],
+        "lateral": [
+          0.15,
+          0.55
+        ],
+        "vertical": [
+          0.18,
+          0.55
+        ]
+      }
+    },
+    {
+      "name": "front-wheel",
+      "count": 33,
+      "mirror": true,
+      "region": {
+        "alongFlow": [
+          -0.82,
+          -0.42
+        ],
+        "lateral": [
+          0.55,
+          1.05
+        ],
+        "vertical": [
+          0,
+          0.78
+        ]
+      }
+    },
+    {
+      "name": "sidepod",
+      "count": 26,
+      "mirror": true,
+      "region": {
+        "alongFlow": [
+          -0.38,
+          0.1
+        ],
+        "lateral": [
+          0.52,
+          0.82
+        ],
+        "vertical": [
+          0.22,
+          0.68
+        ]
+      }
+    },
+    {
+      "name": "floor-underside",
+      "count": 73,
+      "region": {
+        "alongFlow": [
+          -0.55,
+          0.78
+        ],
+        "lateral": [
+          -0.88,
+          0.88
+        ],
+        "vertical": [
+          0,
+          0.12
+        ]
+      },
+      "seedMode": "midGap"
+    },
+    {
+      "name": "diffuser",
+      "count": 33,
+      "region": {
+        "alongFlow": [
+          0.78,
+          1.05
+        ],
+        "lateral": [
+          -0.55,
+          0.55
+        ],
+        "vertical": [
+          0,
+          0.22
+        ]
+      }
+    },
+    {
+      "name": "rear-wing",
+      "count": 46,
+      "region": {
+        "alongFlow": [
+          0.74,
+          0.96
+        ],
+        "lateral": [
+          -0.6,
+          0.6
+        ],
+        "vertical": [
+          0.55,
+          0.76
+        ]
+      }
+    },
+    {
+      "name": "engine-cover",
+      "count": 26,
+      "region": {
+        "alongFlow": [
+          0.08,
+          0.75
+        ],
+        "lateral": [
+          -0.35,
+          0.35
+        ],
+        "vertical": [
+          0.45,
+          0.72
+        ]
+      }
+    },
+    {
+      "name": "rear-wheel",
+      "count": 33,
+      "mirror": true,
+      "region": {
+        "alongFlow": [
+          0.52,
+          0.92
+        ],
+        "lateral": [
+          0.55,
+          1.05
+        ],
+        "vertical": [
+          0,
+          0.78
+        ]
+      }
+    }
+  ],
+  "_primitivesComment": "Phase 3.7: doublets REMOVED entirely (they couldn't represent thin multi-element geometry like the front wing, and produced closed recirculation loops -- see PHASE-3.7.md's intro and src/particles/primitives.js). What remains: vortex filaments at the wing tips and diffuser edges (kept per section 4 -- they produce trailing spiral structure guide curves alone don't), and the sidepod sinks / diffuser source, now at LOW strength (halved from the Phase 3.6 values) since guide curves do the routing work now and these are meant as texture, not the primary pull. `decayLength` stays ~5.2 (a car length). Their swirl/pull is capped by flowInvariant.js's global lateral+vertical limit applied to the FINAL field in vectorField.js, so none of them can close a loop on their own regardless of strength.",
+  "primitives": [
+    {
+      "type": "vortex",
+      "name": "front-wing-tip",
+      "anchor": {
+        "alongFlow": -0.9,
+        "lateral": 0.65,
+        "vertical": 0.28
+      },
+      "axis": {
+        "along": 1,
+        "lateral": 0,
+        "vertical": 0
+      },
+      "strength": 1.8,
+      "coreRadius": 0.08,
+      "decayLength": 5.2,
+      "mirror": true
+    },
+    {
+      "type": "vortex",
+      "name": "rear-wing-tip",
+      "anchor": {
+        "alongFlow": 0.9,
+        "lateral": 0.59,
+        "vertical": 0.68
+      },
+      "axis": {
+        "along": 1,
+        "lateral": 0,
+        "vertical": 0
+      },
+      "strength": 1.6,
+      "coreRadius": 0.08,
+      "decayLength": 5.2,
+      "mirror": true
+    },
+    {
+      "type": "vortex",
+      "name": "diffuser-edge",
+      "anchor": {
+        "alongFlow": 0.95,
+        "lateral": 0.45,
+        "vertical": 0.08
+      },
+      "axis": {
+        "along": 1,
+        "lateral": 0,
+        "vertical": 0
+      },
+      "strength": 1.3,
+      "coreRadius": 0.1,
+      "decayLength": 5.2,
+      "mirror": true
+    },
+    {
+      "type": "sourceSink",
+      "name": "sidepod-inlet",
+      "anchor": {
+        "alongFlow": -0.3,
+        "lateral": 0.66,
+        "vertical": 0.42
+      },
+      "strength": -0.15,
+      "coreRadius": 0.12,
+      "decayLength": 5.2,
+      "mirror": true
+    },
+    {
+      "type": "sourceSink",
+      "name": "diffuser-exit",
+      "anchor": {
+        "alongFlow": 1,
+        "lateral": 0.45,
+        "vertical": 0.06
+      },
+      "strength": 0.2,
+      "coreRadius": 0.15,
+      "decayLength": 5.2,
+      "mirror": true
+    }
+  ],
+  "_guideCurvesComment": "Phase 3.7 sections 2-3: authored splines describing the paths air actually takes -- the primary mechanism now, replacing doublets. Control points use the same alongFlow/lateral/vertical fractional convention as everything else (src/particles/anchors.js), authored in DOWNSTREAM order (see src/particles/guideCurves.js) so a curve's own tangent is never upstream by construction. `radius` (world units) is the influence distance, `weight` (0-1) how strongly the field blends toward the curve's tangent, `speedScale` a local multiplier on freestream speed (used to represent acceleration through a constriction or expansion out of one -- the underfloor path is split into two curves, accelerate then expand, since one curve only carries a single scalar speedScale). Anchor positions reuse the same real component measurements as the `groups`/former `primitives` above (front wing ~-1.0 to -0.88, front tyre ~-0.60 centre / lateral ~0.78-1.0, sidepod inlet -0.30/0.66, floor -0.55 to 1.0, rear wing 0.85-0.95, rear tyre 0.72) -- not independently re-measured, since they describe the same real features. front-wing-mainplane/-midflap/-topflap, nose-flank, nose-pillar, cockpit-surround and chassis-flank (added later in Phase 3.7) were instead measured directly off the source GLB (world-space vertex bounds/profiles of 'Front Wing Bottom'/'middle'/'Top', 'Front wing Connecting pieces ', 'Front Wing Mount', 'Main body', 'Glass', 'Inside Seat' and 'Top Intake Details', converted through anchors.js's own fractional convention) rather than eyeballed, per the author's explicit ask -- see PROGRESS.md for the derivation.",
+  "guideCurves": [
+    {
+      "name": "front-wing-mainplane",
+      "mirror": true,
+      "points": [
+        {
+          "alongFlow": -1.0105,
+          "lateral": 0.0487,
+          "vertical": 0.1006
+        },
+        {
+          "alongFlow": -0.9619,
+          "lateral": 0.261,
+          "vertical": 0.1209
+        },
+        {
+          "alongFlow": -0.8998,
+          "lateral": 0.4192,
+          "vertical": 0.1042
+        },
+        {
+          "alongFlow": -0.8691,
+          "lateral": 0.612,
+          "vertical": 0.2223
+        }
+      ],
+      "radius": 0.15,
+      "weight": 0.9,
+      "speedScale": 1.3
+    },
+    {
+      "name": "front-wing-midflap",
+      "mirror": true,
+      "points": [
+        {
+          "alongFlow": -0.907,
+          "lateral": 0.0371,
+          "vertical": 0.1732
+        },
+        {
+          "alongFlow": -0.9264,
+          "lateral": 0.2593,
+          "vertical": 0.2526
+        },
+        {
+          "alongFlow": -0.8432,
+          "lateral": 0.4263,
+          "vertical": 0.1674
+        },
+        {
+          "alongFlow": -0.8342,
+          "lateral": 0.5897,
+          "vertical": 0.2229
+        }
+      ],
+      "radius": 0.15,
+      "weight": 0.9,
+      "speedScale": 1.0
+    },
+    {
+      "name": "front-wing-topflap",
+      "mirror": true,
+      "points": [
+        {
+          "alongFlow": -0.8858,
+          "lateral": 0.0442,
+          "vertical": 0.1699
+        },
+        {
+          "alongFlow": -0.8746,
+          "lateral": 0.2875,
+          "vertical": 0.2702
+        },
+        {
+          "alongFlow": -0.8378,
+          "lateral": 0.4457,
+          "vertical": 0.1844
+        },
+        {
+          "alongFlow": -0.8425,
+          "lateral": 0.5813,
+          "vertical": 0.3269
+        }
+      ],
+      "radius": 0.15,
+      "weight": 0.9,
+      "speedScale": 0.85
+    },
+    {
+      "name": "nose-flank",
+      "mirror": true,
+      "points": [
+        {
+          "alongFlow": -0.9395,
+          "lateral": 0.0592,
+          "vertical": 0.2047,
+          "speedScale": 0.8
+        },
+        {
+          "alongFlow": -0.9268,
+          "lateral": 0.1399,
+          "vertical": 0.3632,
+          "speedScale": 0.85
+        },
+        {
+          "alongFlow": -0.8343,
+          "lateral": 0.1613,
+          "vertical": 0.4496,
+          "speedScale": 0.95
+        },
+        {
+          "alongFlow": -0.7555,
+          "lateral": 0.074,
+          "vertical": 0.5335,
+          "speedScale": 1.05
+        },
+        {
+          "alongFlow": -0.6675,
+          "lateral": 0.1188,
+          "vertical": 0.5938,
+          "speedScale": 1.1
+        },
+        {
+          "alongFlow": -0.5851,
+          "lateral": 0.2602,
+          "vertical": 0.543,
+          "speedScale": 1.15
+        },
+        {
+          "alongFlow": -0.4621,
+          "lateral": 0.2552,
+          "vertical": 0.563,
+          "speedScale": 1.15
+        }
+      ],
+      "radius": 0.18,
+      "weight": 0.88,
+      "speedScale": 1.05
+    },
+    {
+      "name": "nose-pillar",
+      "mirror": true,
+      "points": [
+        {
+          "alongFlow": -0.972,
+          "lateral": 0.0594,
+          "vertical": 0.3312,
+          "speedScale": 0.8
+        },
+        {
+          "alongFlow": -0.97,
+          "lateral": 0.1282,
+          "vertical": 0.2402,
+          "speedScale": 0.85
+        },
+        {
+          "alongFlow": -0.9176,
+          "lateral": 0.2759,
+          "vertical": 0.1274,
+          "speedScale": 0.9
+        },
+        {
+          "alongFlow": -0.8916,
+          "lateral": 0.4559,
+          "vertical": 0.1591,
+          "speedScale": 0.95
+        }
+      ],
+      "radius": 0.16,
+      "weight": 0.85,
+      "speedScale": 0.9
+    },
+    {
+      "name": "cockpit-surround",
+      "points": [
+        {
+          "alongFlow": -0.4339,
+          "lateral": 0,
+          "vertical": 0.5746
+        },
+        {
+          "alongFlow": -0.3294,
+          "lateral": 0,
+          "vertical": 0.5685
+        },
+        {
+          "alongFlow": -0.2692,
+          "lateral": 0,
+          "vertical": 0.8405
+        },
+        {
+          "alongFlow": -0.1554,
+          "lateral": 0,
+          "vertical": 0.8227
+        },
+        {
+          "alongFlow": -0.0736,
+          "lateral": 0,
+          "vertical": 0.6916
+        },
+        {
+          "alongFlow": 0.0999,
+          "lateral": 0,
+          "vertical": 0.8259
+        },
+        {
+          "alongFlow": 0.1999,
+          "lateral": 0,
+          "vertical": 0.8302
+        }
+      ],
+      "radius": 0.22,
+      "weight": 0.87,
+      "speedScale": 1.05
+    },
+    {
+      "name": "chassis-flank",
+      "mirror": true,
+      "points": [
+        {
+          "alongFlow": -0.2672,
+          "lateral": 0.318,
+          "vertical": 0.4703
+        },
+        {
+          "alongFlow": -0.2203,
+          "lateral": 0.4342,
+          "vertical": 0.42
+        },
+        {
+          "alongFlow": -0.1856,
+          "lateral": 0.611,
+          "vertical": 0.4775
+        },
+        {
+          "alongFlow": -0.1471,
+          "lateral": 0.7664,
+          "vertical": 0.4683
+        },
+        {
+          "alongFlow": -0.0725,
+          "lateral": 0.6546,
+          "vertical": 0.46
+        },
+        {
+          "alongFlow": -0.0203,
+          "lateral": 0.683,
+          "vertical": 0.4362
+        }
+      ],
+      "radius": 0.18,
+      "weight": 0.87,
+      "speedScale": 1.2
+    },
+    {
+      "name": "over-nose-and-chassis",
+      "points": [
+        {
+          "alongFlow": -1.15,
+          "lateral": 0,
+          "vertical": 0.3,
+          "speedScale": 0.6
+        },
+        {
+          "alongFlow": -0.95,
+          "lateral": 0,
+          "vertical": 0.4,
+          "speedScale": 0.7
+        },
+        {
+          "alongFlow": -0.6,
+          "lateral": 0,
+          "vertical": 0.75,
+          "speedScale": 1.0
+        },
+        {
+          "alongFlow": -0.112,
+          "lateral": 0,
+          "vertical": 0.8677,
+          "speedScale": 1.2
+        },
+        {
+          "alongFlow": 0.382,
+          "lateral": 0,
+          "vertical": 0.707,
+          "speedScale": 1.15
+        },
+        {
+          "alongFlow": 0.894,
+          "lateral": 0,
+          "vertical": 0.7007,
+          "speedScale": 1.0
+        }
+      ],
+      "radius": 0.26,
+      "weight": 0.85,
+      "speedScale": 1.1
+    },
+    {
+      "name": "front-wheel-outboard",
+      "mirror": true,
+      "points": [
+        {
+          "alongFlow": -0.95,
+          "lateral": 0.85,
+          "vertical": 0.4
+        },
+        {
+          "alongFlow": -0.75,
+          "lateral": 1.05,
+          "vertical": 0.45
+        },
+        {
+          "alongFlow": -0.55,
+          "lateral": 1.15,
+          "vertical": 0.4
+        },
+        {
+          "alongFlow": -0.3,
+          "lateral": 1.1,
+          "vertical": 0.35
+        },
+        {
+          "alongFlow": 0,
+          "lateral": 0.95,
+          "vertical": 0.3
+        }
+      ],
+      "radius": 0.22,
+      "weight": 0.8,
+      "speedScale": 1.05
+    },
+    {
+      "name": "sidepod-inlet-and-flank",
+      "mirror": true,
+      "points": [
+        {
+          "alongFlow": -0.45,
+          "lateral": 0.55,
+          "vertical": 0.4,
+          "speedScale": 1.0
+        },
+        {
+          "alongFlow": -0.3,
+          "lateral": 0.6606,
+          "vertical": 0.4198,
+          "speedScale": 1.1
+        },
+        {
+          "alongFlow": -0.0505,
+          "lateral": 0.7345,
+          "vertical": 0.3755,
+          "speedScale": 1.2
+        },
+        {
+          "alongFlow": 0.2001,
+          "lateral": 0.6841,
+          "vertical": 0.3288,
+          "speedScale": 1.2
+        },
+        {
+          "alongFlow": 0.45,
+          "lateral": 0.55,
+          "vertical": 0.28,
+          "speedScale": 1.1
+        }
+      ],
+      "radius": 0.2,
+      "weight": 0.75,
+      "speedScale": 1.15
+    },
+    {
+      "name": "underfloor-accelerate",
+      "points": [
+        {
+          "alongFlow": -0.6,
+          "lateral": 0,
+          "vertical": 0.0453,
+          "speedScale": 1.1
+        },
+        {
+          "alongFlow": -0.3,
+          "lateral": 0,
+          "vertical": 0.0453,
+          "speedScale": 1.3
+        },
+        {
+          "alongFlow": 0,
+          "lateral": 0,
+          "vertical": 0.0453,
+          "speedScale": 1.4
+        },
+        {
+          "alongFlow": 0.15,
+          "lateral": 0,
+          "vertical": 0.0453,
+          "speedScale": 1.4
+        }
+      ],
+      "radius": 0.2,
+      "weight": 0.85,
+      "speedScale": 1.4
+    },
+    {
+      "name": "underfloor-accelerate-lane1",
+      "points": [
+        {
+          "alongFlow": -0.6,
+          "lateral": 0.36,
+          "vertical": 0.0453,
+          "speedScale": 1.1
+        },
+        {
+          "alongFlow": -0.3,
+          "lateral": 0.36,
+          "vertical": 0.0453,
+          "speedScale": 1.3
+        },
+        {
+          "alongFlow": 0,
+          "lateral": 0.36,
+          "vertical": 0.0453,
+          "speedScale": 1.4
+        },
+        {
+          "alongFlow": 0.15,
+          "lateral": 0.36,
+          "vertical": 0.0453,
+          "speedScale": 1.4
+        },
+        {
+          "alongFlow": 0.5,
+          "lateral": 0.36,
+          "vertical": 0.05,
+          "speedScale": 1.35
+        },
+        {
+          "alongFlow": 0.83,
+          "lateral": 0.36,
+          "vertical": 0.1,
+          "speedScale": 1.2
+        },
+        {
+          "alongFlow": 1.05,
+          "lateral": 0.36,
+          "vertical": 0.14,
+          "speedScale": 0.95
+        }
+      ],
+      "radius": 0.2,
+      "weight": 0.85,
+      "speedScale": 1.4,
+      "mirror": true
+    },
+    {
+      "name": "underfloor-accelerate-lane2",
+      "points": [
+        {
+          "alongFlow": -0.6,
+          "lateral": 0.72,
+          "vertical": 0.0453,
+          "speedScale": 1.1
+        },
+        {
+          "alongFlow": -0.3,
+          "lateral": 0.72,
+          "vertical": 0.0453,
+          "speedScale": 1.3
+        },
+        {
+          "alongFlow": 0,
+          "lateral": 0.72,
+          "vertical": 0.0453,
+          "speedScale": 1.4
+        },
+        {
+          "alongFlow": 0.15,
+          "lateral": 0.72,
+          "vertical": 0.0453,
+          "speedScale": 1.4
+        },
+        {
+          "alongFlow": 0.5,
+          "lateral": 0.72,
+          "vertical": 0.05,
+          "speedScale": 1.3
+        },
+        {
+          "alongFlow": 0.83,
+          "lateral": 0.72,
+          "vertical": 0.07,
+          "speedScale": 1.15
+        },
+        {
+          "alongFlow": 1.05,
+          "lateral": 0.72,
+          "vertical": 0.09,
+          "speedScale": 0.95
+        }
+      ],
+      "radius": 0.2,
+      "weight": 0.85,
+      "speedScale": 1.4,
+      "mirror": true
+    },
+    {
+      "name": "diffuser-expand",
+      "points": [
+        {
+          "alongFlow": 0.15,
+          "lateral": 0,
+          "vertical": 0.0453,
+          "speedScale": 1.4
+        },
+        {
+          "alongFlow": 0.5,
+          "lateral": 0,
+          "vertical": 0.05,
+          "speedScale": 1.35
+        },
+        {
+          "alongFlow": 0.8315,
+          "lateral": 0,
+          "vertical": 0.1416,
+          "speedScale": 1.2
+        },
+        {
+          "alongFlow": 1.0531,
+          "lateral": 0,
+          "vertical": 0.1835,
+          "speedScale": 0.95
+        }
+      ],
+      "radius": 0.18,
+      "weight": 0.8,
+      "speedScale": 1.3
+    },
+    {
+      "name": "rear-wing-over-behind",
+      "points": [
+        {
+          "alongFlow": 0.526,
+          "lateral": 0,
+          "vertical": 0.6285,
+          "speedScale": 1.0
+        },
+        {
+          "alongFlow": 0.7746,
+          "lateral": 0,
+          "vertical": 0.7,
+          "speedScale": 0.85
+        },
+        {
+          "alongFlow": 0.9585,
+          "lateral": 0,
+          "vertical": 0.6773,
+          "speedScale": 0.8
+        },
+        {
+          "alongFlow": 1.15,
+          "lateral": 0,
+          "vertical": 0.62,
+          "speedScale": 1.0
+        },
+        {
+          "alongFlow": 1.4,
+          "lateral": 0,
+          "vertical": 0.55,
+          "speedScale": 1.0
+        }
+      ],
+      "radius": 0.2,
+      "weight": 0.8,
+      "speedScale": 0.9
+    },
+    {
+      "name": "rear-wheel-outboard",
+      "mirror": true,
+      "points": [
+        {
+          "alongFlow": 0.4995,
+          "lateral": 0.8549,
+          "vertical": 0.4006,
+          "speedScale": 1.05
+        },
+        {
+          "alongFlow": 0.6482,
+          "lateral": 1.0682,
+          "vertical": 0.4223,
+          "speedScale": 1.1
+        },
+        {
+          "alongFlow": 0.8,
+          "lateral": 1.15,
+          "vertical": 0.38,
+          "speedScale": 1.05
+        },
+        {
+          "alongFlow": 1,
+          "lateral": 1.1,
+          "vertical": 0.32,
+          "speedScale": 1.0
+        },
+        {
+          "alongFlow": 1.25,
+          "lateral": 0.95,
+          "vertical": 0.28,
+          "speedScale": 1.0
+        }
+      ],
+      "radius": 0.22,
+      "weight": 0.8,
+      "speedScale": 1.05
+    },
+    {
+      "name": "rear-wing-underside",
+      "mirror": true,
+      "points": [
+        {
+          "alongFlow": 0.6,
+          "lateral": 0.3,
+          "vertical": 0.42
+        },
+        {
+          "alongFlow": 0.8,
+          "lateral": 0.3,
+          "vertical": 0.5
+        },
+        {
+          "alongFlow": 0.95,
+          "lateral": 0.3,
+          "vertical": 0.5
+        },
+        {
+          "alongFlow": 1.1,
+          "lateral": 0.3,
+          "vertical": 0.45
+        }
+      ],
+      "radius": 0.22,
+      "weight": 0.7,
+      "speedScale": 1.3
+    }
+  ],
+  "_wakesComment": "Each entry is an expanding cone downstream of `anchor` along `axis` -- inside it, a traced line progressively loses coherence (see src/particles/wakes.js wakeImmersionAt() and streamlines.js), and it is also where section 1's invariant permits the streamwise component to go negative (an 'explicitly declared wake region'). `expansionAngle` is in radians. `decayLength` here is deliberately much shorter than the primitives'/guide curves' ~5.2 (car-length) reach -- this controls how far downstream the WAKE's incoherence (and the invariant's exemption) persists. Suspension-arm wakes were left out (no anchor data exists for them yet).",
+  "wakes": [
+    {
+      "name": "front-tyre",
+      "anchor": {
+        "alongFlow": -0.42,
+        "lateral": 0.78,
+        "vertical": 0.35
+      },
+      "axis": {
+        "along": 1,
+        "lateral": 0,
+        "vertical": 0
+      },
+      "expansionAngle": 0.3,
+      "decayLength": 2,
+      "mirror": true,
+      "speedDeficit": 0.45
+    },
+    {
+      "name": "rear-tyre",
+      "anchor": {
+        "alongFlow": 0.78,
+        "lateral": 0.77,
+        "vertical": 0.38
+      },
+      "axis": {
+        "along": 1,
+        "lateral": 0,
+        "vertical": 0
+      },
+      "expansionAngle": 0.32,
+      "decayLength": 2.2,
+      "mirror": true,
+      "speedDeficit": 0.5
+    },
+    {
+      "name": "front-wing-endplate",
+      "anchor": {
+        "alongFlow": -0.85,
+        "lateral": 0.65,
+        "vertical": 0.28
+      },
+      "axis": {
+        "along": 1,
+        "lateral": 0,
+        "vertical": 0
+      },
+      "expansionAngle": 0.22,
+      "decayLength": 1.8,
+      "mirror": true,
+      "speedDeficit": 0.3
+    },
+    {
+      "name": "sidepod-trailing-edge",
+      "anchor": {
+        "alongFlow": 0.12,
+        "lateral": 0.7,
+        "vertical": 0.35
+      },
+      "axis": {
+        "along": 1,
+        "lateral": 0,
+        "vertical": 0
+      },
+      "expansionAngle": 0.28,
+      "decayLength": 2,
+      "mirror": true,
+      "speedDeficit": 0.3
+    },
+    {
+      "name": "diffuser-exit",
+      "anchor": {
+        "alongFlow": 1.02,
+        "lateral": 0,
+        "vertical": 0.1
+      },
+      "axis": {
+        "along": 1,
+        "lateral": 0,
+        "vertical": 0
+      },
+      "expansionAngle": 0.45,
+      "decayLength": 2.5,
+      "speedDeficit": 0.35
+    },
+    {
+      "name": "rear-wing",
+      "anchor": {
+        "alongFlow": 0.95,
+        "lateral": 0,
+        "vertical": 0.68
+      },
+      "axis": {
+        "along": 1,
+        "lateral": 0,
+        "vertical": 0
+      },
+      "expansionAngle": 0.35,
+      "decayLength": 2.3,
+      "speedDeficit": 0.5
+    }
+  ],
+  "_underfloorLanesNote": "Underfloor acceleration is authored as three parallel lanes (centre, +-0.36, +-0.72 of the half car width, radius 0.2 each) so it spans the full floor width (~+-0.87); one wide curve would also reach up into the bodywork above."
+}

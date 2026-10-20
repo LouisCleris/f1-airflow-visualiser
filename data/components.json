@@ -1,0 +1,326 @@
+{
+  "_about": "Component cards for the viewer. Entries without a \"scene\" belong to the F1 scene; entries with \"scene\": \"falcon\" belong to the Falcon 6X scene. Only the key aero parts have a description (F1, and the Falcon's fuselage, wings, engines, tail and wake); the others show their title only.",
+  "_meshNames": "Mesh names are exactly as stored in 'F1 model.glb', trailing spaces included. three.js GLTFLoader sanitises names on load (spaces become underscores, dots are removed), so match after sanitising. The left half of the car is a runtime mirror: both sides resolve to the same entry.",
+  "_flowGroups": "Seeding groups in data/rakes.json used by 'Show flow around this part only'. Empty means the part has no flow group of its own. A group seeded on both sides of the centreline (mirror: true in rakes.json) is two groups, <name> and <name>-mirror; list both to isolate both sides.",
+  "components": [
+    {
+      "id": "front-wing",
+      "title": "Front wing",
+      "meshes": [
+        "Front Wing Bottom",
+        "Front Wing middle",
+        "Front wing Top",
+        "Front wing side plates ",
+        "Front wing Connecting pieces ",
+        "Front Wing Mount",
+        "Front Flap Details"
+      ],
+      "flowGroups": [
+        "front-wing"
+      ],
+      "description": "The first part of the car the air hits. Its stacked elements push the air upward, so the car gets pushed down: that's front downforce. The gaps between the elements keep the flow attached so the wing doesn't stall, and the endplates guide the air around the front tyres."
+    },
+    {
+      "id": "nose-chassis",
+      "title": "Nose and chassis",
+      "meshes": [
+        "Main body"
+      ],
+      "flowGroups": [
+        "nose",
+        "chassis"
+      ],
+      "description": ""
+    },
+    {
+      "id": "sidepods",
+      "title": "Sidepods",
+      "meshes": [],
+      "flowGroups": [
+        "sidepod"
+      ],
+      "description": "They take in air to cool the engine. Behind the inlets the bodywork narrows into a \"coke-bottle\" shape, which speeds the air up toward the back of the car. A bigger inlet cools better but adds drag, so it's always a compromise.",
+      "note": "No separate mesh: part of 'Main body'. Reached from the Sidepods button, not by clicking the car."
+    },
+    {
+      "id": "engine-cover",
+      "title": "Engine cover and airbox",
+      "meshes": [
+        "Top Intake Details"
+      ],
+      "flowGroups": [
+        "engine-cover"
+      ],
+      "description": ""
+    },
+    {
+      "id": "cockpit",
+      "title": "Cockpit and halo",
+      "meshes": [
+        "Inside Seat",
+        "Glass"
+      ],
+      "flowGroups": [
+        "cockpit"
+      ],
+      "description": ""
+    },
+    {
+      "id": "steering-wheel",
+      "title": "Steering wheel",
+      "meshes": [
+        "Steering Wheel",
+        "Buttons",
+        "Handles",
+        "Screen",
+        "LED Lights"
+      ],
+      "flowGroups": [],
+      "description": ""
+    },
+    {
+      "id": "floor",
+      "title": "Floor",
+      "meshes": [
+        "Floor"
+      ],
+      "flowGroups": [
+        "floor-underside"
+      ],
+      "description": "One of the biggest sources of downforce. Air speeds up through the channels underneath, its pressure drops (the Venturi effect), and the car gets sucked toward the track. From 2026 the floor is flatter, so it makes less downforce than on the 2022–2025 cars."
+    },
+    {
+      "id": "diffuser",
+      "title": "Diffuser",
+      "meshes": [],
+      "flowGroups": [
+        "diffuser"
+      ],
+      "description": "The upswept part at the back of the floor. It slows the fast air from under the car and lets its pressure rise back gradually, which keeps the air underneath moving fast. If it opens up too sharply, the flow separates and the downforce drops.",
+      "note": "No separate mesh: part of 'Floor'. Reached from the part buttons, not by clicking the car."
+    },
+    {
+      "id": "front-wheels",
+      "title": "Front wheels",
+      "meshes": [
+        "Front Wheelover",
+        "Front Tire",
+        "Front Inside Cover"
+      ],
+      "flowGroups": [
+        "front-wheel"
+      ],
+      "description": "An open, spinning wheel makes a big turbulent wake and a lot of drag. The front wing and wheel covers try to push that wake outward, away from the floor, because dirty air under the car costs downforce."
+    },
+    {
+      "id": "rear-wheels",
+      "title": "Rear wheels",
+      "meshes": [
+        "Rear Wheelover",
+        "Rear Tire",
+        "Rear Inside Cover"
+      ],
+      "flowGroups": [
+        "rear-wheel"
+      ],
+      "description": ""
+    },
+    {
+      "id": "front-suspension",
+      "title": "Front suspension",
+      "meshes": [
+        "Front Arms ",
+        "Front Rods",
+        "Connection Rod"
+      ],
+      "flowGroups": [],
+      "description": ""
+    },
+    {
+      "id": "rear-suspension",
+      "title": "Rear suspension",
+      "meshes": [
+        "Back Arms",
+        "Rear Rods"
+      ],
+      "flowGroups": [],
+      "description": ""
+    },
+    {
+      "id": "rear-wing",
+      "title": "Rear wing",
+      "meshes": [
+        "Rear Wing main part",
+        "Rear Wing side plate",
+        "Rear Wing Holder",
+        "Rear Wing Bottom Holder"
+      ],
+      "flowGroups": [
+        "rear-wing"
+      ],
+      "description": "It works in clean air above the back of the car to make rear downforce. More angle means more downforce but also more drag, so teams run a steep wing at slow tracks like Monaco and a flat one at fast tracks like Monza."
+    },
+    {
+      "id": "drs",
+      "title": "DRS / active aero",
+      "meshes": [
+        "Rear wing DRS ",
+        "Rear wing DRS .001",
+        "DRS Holder",
+        "DRS Mechanism"
+      ],
+      "flowGroups": [
+        "rear-wing"
+      ],
+      "description": "DRS opens the top flap of the rear wing on the straights, cutting drag so the car goes faster and can overtake. From 2026 it's replaced by active aero: both wings flatten on the straights and close again for the corners."
+    },
+    {
+      "id": "exhaust",
+      "title": "Exhaust",
+      "meshes": [
+        "Exhaust"
+      ],
+      "flowGroups": [],
+      "description": ""
+    },
+    {
+      "id": "mirrors",
+      "title": "Mirrors",
+      "meshes": [
+        "Mirrors"
+      ],
+      "flowGroups": [],
+      "description": ""
+    },
+    {
+      "id": "antennas",
+      "title": "Antennas",
+      "meshes": [
+        "Antennas"
+      ],
+      "flowGroups": [],
+      "description": ""
+    },
+    {
+      "id": "rear-light",
+      "title": "Rear light",
+      "meshes": [
+        "Rear LED"
+      ],
+      "flowGroups": [],
+      "description": ""
+    },
+    {
+      "id": "wake",
+      "title": "Wake",
+      "meshes": [],
+      "flowGroups": [],
+      "description": "The messy, slow air left behind the car. A car following closely drives into it, loses downforce and struggles to stay close in corners. That's why the rules try to send the wake upward and away from the car behind.",
+      "note": "No mesh: the region behind the car. Opened from the Wake button, not by clicking the car."
+    },
+    {
+      "id": "falcon-fuselage",
+      "scene": "falcon",
+      "title": "Fuselage",
+      "meshes": [
+        "Main Body"
+      ],
+      "flowGroups": [
+        "nose",
+        "fuselage-top",
+        "fuselage-side",
+        "fuselage-side-mirror",
+        "fuselage-belly"
+      ],
+      "description": "The nose is where the air splits: right at the tip it almost stops, then it speeds up as it wraps around the rounded front and runs along the body. The long, smooth tube keeps the flow attached all the way back, so most of the drag here is just friction with the skin."
+    },
+    {
+      "id": "falcon-windows",
+      "scene": "falcon",
+      "title": "Windows",
+      "meshes": [
+        "Windows"
+      ],
+      "flowGroups": [],
+      "description": ""
+    },
+    {
+      "id": "falcon-door",
+      "scene": "falcon",
+      "title": "Door",
+      "meshes": [
+        "Door"
+      ],
+      "flowGroups": [],
+      "description": ""
+    },
+    {
+      "id": "falcon-wings",
+      "scene": "falcon",
+      "title": "Wings",
+      "meshes": [
+        "Wings"
+      ],
+      "flowGroups": [
+        "wing-root",
+        "wing-root-mirror",
+        "wing-top",
+        "wing-top-mirror",
+        "wing-bottom",
+        "wing-bottom-mirror",
+        "upwash",
+        "upwash-mirror",
+        "downwash",
+        "downwash-mirror",
+        "winglet",
+        "winglet-mirror",
+        "winglet-vortex",
+        "winglet-vortex-mirror"
+      ],
+      "description": "They carry the whole jet. Air over the curved top speeds up and its pressure drops, and that difference with the air underneath is lift. The wings are swept back so the jet can cruise close to the speed of sound, and the winglets at the tips weaken the tip vortices, which saves fuel."
+    },
+    {
+      "id": "falcon-engines",
+      "scene": "falcon",
+      "title": "Engines",
+      "meshes": [
+        "Engines"
+      ],
+      "flowGroups": [
+        "engine-intake",
+        "engine-intake-mirror",
+        "engine-side",
+        "engine-side-mirror",
+        "engine-exhaust",
+        "engine-exhaust-mirror"
+      ],
+      "description": "Two turbofans mounted at the back of the fuselage instead of under the wings. That keeps the wing clean for lift and the cabin quieter. Each one pulls in a huge amount of air at the front and pushes it out faster at the back: that speed difference is the thrust."
+    },
+    {
+      "id": "falcon-tail",
+      "scene": "falcon",
+      "title": "Tail",
+      "meshes": [
+        "Back Tail"
+      ],
+      "flowGroups": [
+        "tail-fin",
+        "tail-fin-mirror",
+        "tail-stabiliser",
+        "tail-stabiliser-mirror"
+      ],
+      "description": "It keeps the jet stable. The tall fin stops the nose from swinging left and right, and the horizontal tail balances the wing, which naturally wants to pitch the nose down. The moving surfaces on them, the rudder and elevators, are what the pilots use to turn and climb."
+    },
+    {
+      "id": "falcon-wake",
+      "scene": "falcon",
+      "title": "Wake",
+      "meshes": [],
+      "flowGroups": [],
+      "description": "Behind the jet, each wingtip leaves a spinning vortex, turning in opposite directions. They can last for minutes and are strong enough to shake a smaller plane flying into them. That's why airports leave a gap between aircraft taking off and landing, longer behind heavier jets.",
+      "showsWakeParticles": true,
+      "note": "No mesh: the region behind the tail. Opened from the Wake button."
+    }
+  ],
+  "_meshNamesFalcon": "Falcon mesh names are exactly as stored in 'Falcon 6X.glb'. The aircraft is complete in the file (no runtime mirror)."
+}

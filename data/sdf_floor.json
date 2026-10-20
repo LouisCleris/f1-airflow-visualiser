@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "generatedBy": "scripts/bake_sdf.py",
+  "sourceModel": "models/F1 model.glb (read-only; real full-resolution mesh, car.js's exact per-component mirror)",
+  "origin": [
+    -0.5064228431632121,
+    -0.021703836135566236,
+    -2.655102620584269
+  ],
+  "pitch": 0.007234612045188745,
+  "dims": [
+    144,
+    24,
+    544
+  ],
+  "blockSize": 8,
+  "blockGrid": [
+    18,
+    3,
+    68
+  ],
+  "blockCount": 2979,
+  "bandWorld": 0.05787689636150996,
+  "quantisation": "int16, value = distance / bandWorld * 32767; node-centred lattice (node i at origin + i*pitch); empty blocks read as +bandWorld",
+  "sign": "positive outside, negative inside",
+  "signInconsistentPairs": 0,
+  "refine": 4,
+  "box": [
+    -0.5,
+    0.5,
+    -0.02,
+    0.12,
+    -2.65,
+    1.25
+  ],
+  "inflateCells": 0.0
+}
