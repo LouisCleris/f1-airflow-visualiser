@@ -84,6 +84,9 @@
     #parts button { height: 44px; padding: 0 14px; border: 0; border-radius: 5px; font-size: 13px; font-weight: 500; background: transparent; color: var(--text-2); }
     #parts button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
     #disclaimer { margin: 0; width: 300px; max-width: 100%; padding: 12px 14px; font-size: 12px; line-height: 1.5; color: var(--text-2); }
+    #disclaimer p { margin: 0; }
+    #credit { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+    #credit a { color: var(--text); text-underline-offset: 2px; }
 
     /* screens too small for this layout: a notice instead of the app (src/main.js does not load it there) */
     #smallScreen { display: none; }
@@ -153,7 +156,10 @@
       <div class="barwrap"><div class="bar"></div><div class="ends"><span>Slower</span><span>Oncoming air</span><span>Faster</span></div></div>
     </div>
     <nav id="parts" class="panel" aria-label="Focus on a part"></nav>
-    <p id="disclaimer" class="panel">Approximate flow visualisation for illustration. Not a computational fluid dynamics simulation.</p>
+    <div id="disclaimer" class="panel">
+      <p>Approximate flow visualisation for illustration. Not a computational fluid dynamics simulation.</p>
+      <p id="credit">A project by Louis Cleris · Code AI-generated to my specification · Source and full disclosure on <a href="https://github.com/LouisCleris/f1-airflow-visualiser" target="_blank" rel="noopener">GitHub</a></p>
+    </div>
   </footer>
 
   <div id="smallScreen" role="note">
