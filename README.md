@@ -4,6 +4,10 @@ I came up with this project, wrote its specification (SPEC.md), modelled both ve
 
 Live viewer: https://louiscleris.github.io/f1-airflow-visualiser/
 
+Build video (90 s): the F1 built part by part, both finished models, then the viewer.
+
+[![Watch the 90-second build video](media/build-video-thumbnail.jpg)](https://louiscleris.github.io/f1-airflow-visualiser/build-video.mp4)
+
 # F1 Airflow
 
 An interactive 3D viewer that shows approximate airflow around two of my own models: an F1 car on a race track and a Falcon 6X business jet in the sky. Streamlines bend around the bodywork, speed is shown as colour (blue slower than the oncoming air, orange faster), and short-lived particles trace the turbulent wake. Click a part, or use the part buttons, to read what it does and to look at the flow around it alone.

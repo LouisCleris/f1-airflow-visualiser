@@ -97,6 +97,8 @@ async function main() {
   mkdirSync(join(DIST, 'data', 'falcon'), { recursive: true });
   for (const f of DIST_DATA) cpSync(join(ROOT, 'data', f), join(DIST, 'data', f));
   writeFileSync(join(DIST, '.nojekyll'), '');
+  // The 90-second build video linked from the README, served next to the page.
+  cpSync(join(ROOT, 'media', 'build-video.mp4'), join(DIST, 'build-video.mp4'));
 
   const sizes = [];
   const walk = (d) => { for (const f of readdirSync(d)) { const p = join(d, f); statSync(p).isDirectory() ? walk(p) : sizes.push([p.slice(DIST.length + 1), statSync(p).size]); } };
